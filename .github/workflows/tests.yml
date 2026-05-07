@@ -1,0 +1,26 @@
+name: Test Formulae
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  style-and-audit:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Style check
+        run: brew style Formula/*.rb
+
+      - name: Audit formulae
+        # `--online` is intentionally omitted while upstream tags / sha256 hashes
+        # are still placeholders. Switch to `brew audit --strict --online` once
+        # every formula has a real sha256 and the upstream repos are public.
+        run: brew audit --strict Formula/*.rb
