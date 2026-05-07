@@ -59,13 +59,36 @@ brew test codedeviate/cli/<formula>
 brew audit --strict codedeviate/cli/<formula>
 ```
 
+## How installs work (and why nothing here is signed)
+
+Every formula is a **source-build** formula. When you run
+`brew install codedeviate/cli/<tool>` Homebrew does the following on
+your machine:
+
+1. Downloads the GitHub source tarball pinned by `url` + `sha256`.
+2. Installs Rust as a build-only dependency (`depends_on "rust" => :build`).
+3. Runs `cargo install` to compile the binary locally.
+4. Removes Rust afterwards, since it is not a runtime dependency.
+
+The resulting binary is built on your own Mac, so macOS never adds the
+`com.apple.quarantine` attribute to it — Gatekeeper does not block it
+and no Apple Developer ID signing or notarization is required. This is
+deliberate: there are no pre-built bottles in this tap, no
+`releases/download/<arch>.tar.gz` URLs, and no `bottle do` blocks
+anywhere.
+
+Trade-off: first install of each tool spends ~1–3 minutes compiling and
+pulls down a few hundred MB of toolchain temporarily. If pre-built
+bottles are added later, they would have to be signed and notarized to
+clear Gatekeeper — that path is intentionally not taken here.
+
 ## Caveats
 
-- Formulae build from source. Bottles are not produced yet — Rust builds can be
-  slow on first install.
 - `sha256` lines are placeholders until each upstream tag is reachable from a
   public GitHub repo. Until then, `brew install` will refuse to fetch the
   tarball, which is intentional.
+- The CI workflow (`.github/workflows/tests.yml`) skips formulae whose
+  `sha256` is still a placeholder, so `main` stays green pre-release.
 
 ## License
 
