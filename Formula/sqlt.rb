@@ -1,5 +1,5 @@
 class Sqlt < Formula
-  desc "Multi-dialect SQL parser and translator (MySQL, MariaDB, PostgreSQL, MSSQL, SQLite)"
+  desc "Multi-dialect SQL parser and translator (MySQL/MariaDB/PostgreSQL/MSSQL/SQLite)"
   homepage "https://github.com/codedeviate/sqlt"
   url "https://github.com/codedeviate/sqlt/archive/refs/tags/v0.3.1.tar.gz"
   sha256 "REPLACE_WITH_SHA256_OF_v0.3.1_TARBALL"

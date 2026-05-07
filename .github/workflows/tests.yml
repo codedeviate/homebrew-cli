@@ -16,11 +16,37 @@ jobs:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
+      - name: Collect released formulae
+        id: collect
+        # Skip any formula whose sha256 is still a `REPLACE_WITH_SHA256_*`
+        # placeholder. Those are scaffolded but not released yet, and
+        # `brew style` rejects non-hex placeholders. Once `scripts/bump.sh`
+        # fills in a real sha for a release, that formula joins the lint set.
+        run: |
+          set -euo pipefail
+          released=()
+          for f in Formula/*.rb; do
+            if grep -q 'REPLACE_WITH_SHA256_' "$f"; then
+              echo "skip (placeholder sha): $f"
+            else
+              echo "lint:                 $f"
+              released+=("$f")
+            fi
+          done
+          if [ "${#released[@]}" -eq 0 ]; then
+            echo "no released formulae yet; nothing to lint"
+            echo "files=" >> "$GITHUB_OUTPUT"
+          else
+            echo "files=${released[*]}" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Style check
-        run: brew style Formula/*.rb
+        if: steps.collect.outputs.files != ''
+        run: brew style ${{ steps.collect.outputs.files }}
 
       - name: Audit formulae
-        # `--online` is intentionally omitted while upstream tags / sha256 hashes
-        # are still placeholders. Switch to `brew audit --strict --online` once
-        # every formula has a real sha256 and the upstream repos are public.
-        run: brew audit --strict Formula/*.rb
+        if: steps.collect.outputs.files != ''
+        # `--online` stays off until every released formula has been
+        # smoke-tested against a public upstream release. Flip it on once
+        # we want CI to verify the tarball URLs as well.
+        run: brew audit --strict ${{ steps.collect.outputs.files }}
