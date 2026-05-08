@@ -14,39 +14,48 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Set up Homebrew
+        # The action auto-taps any repo named `homebrew-*`, so this checkout
+        # is reachable to brew as `codedeviate/cli` for the rest of the job.
         uses: Homebrew/actions/setup-homebrew@main
 
       - name: Collect released formulae
         id: collect
         # Skip any formula whose sha256 is still a `REPLACE_WITH_SHA256_*`
         # placeholder. Those are scaffolded but not released yet, and
-        # `brew style` rejects non-hex placeholders. Once `scripts/bump.sh`
-        # fills in a real sha for a release, that formula joins the lint set.
+        # `brew style` / `brew audit` reject non-hex placeholders.
+        # Once `scripts/bump.sh` fills in a real sha for a release, that
+        # formula joins the lint set automatically.
         run: |
           set -euo pipefail
-          released=()
+          paths=()
+          names=()
           for f in Formula/*.rb; do
             if grep -q 'REPLACE_WITH_SHA256_' "$f"; then
               echo "skip (placeholder sha): $f"
             else
               echo "lint:                 $f"
-              released+=("$f")
+              paths+=("$f")
+              names+=("codedeviate/cli/$(basename "$f" .rb)")
             fi
           done
-          if [ "${#released[@]}" -eq 0 ]; then
+          if [ "${#paths[@]}" -eq 0 ]; then
             echo "no released formulae yet; nothing to lint"
-            echo "files=" >> "$GITHUB_OUTPUT"
+            echo "paths=" >> "$GITHUB_OUTPUT"
+            echo "names=" >> "$GITHUB_OUTPUT"
           else
-            echo "files=${released[*]}" >> "$GITHUB_OUTPUT"
+            echo "paths=${paths[*]}" >> "$GITHUB_OUTPUT"
+            echo "names=${names[*]}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Style check
-        if: steps.collect.outputs.files != ''
-        run: brew style ${{ steps.collect.outputs.files }}
+        if: steps.collect.outputs.paths != ''
+        run: brew style ${{ steps.collect.outputs.paths }}
 
       - name: Audit formulae
-        if: steps.collect.outputs.files != ''
-        # `--online` stays off until every released formula has been
-        # smoke-tested against a public upstream release. Flip it on once
-        # we want CI to verify the tarball URLs as well.
-        run: brew audit --strict ${{ steps.collect.outputs.files }}
+        if: steps.collect.outputs.names != ''
+        # `brew audit` only accepts formula names, not paths. We pass the
+        # tap-qualified name (`codedeviate/cli/foo`) so it works regardless
+        # of whether other taps happen to define a same-named formula.
+        # `--online` stays off until each tarball URL is known to be stable;
+        # flip it on once we want CI to verify URLs as well.
+        run: brew audit --strict ${{ steps.collect.outputs.names }}
