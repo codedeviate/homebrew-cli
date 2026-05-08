@@ -8,6 +8,10 @@ class Recon < Formula
 
   depends_on "rust" => :build
 
+  # Both formulae install a binary named `recon` into HOMEBREW_PREFIX/bin.
+  conflicts_with "recon-impersonate",
+    because: "both install the `recon` binary"
+
   def install
     system "cargo", "install", *std_cargo_args(path: ".")
   end
