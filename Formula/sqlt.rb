@@ -1,8 +1,8 @@
 class Sqlt < Formula
   desc "Multi-dialect SQL parser and translator (MySQL/MariaDB/PostgreSQL/MSSQL/SQLite)"
   homepage "https://github.com/codedeviate/sqlt"
-  url "https://github.com/codedeviate/sqlt/archive/refs/tags/v0.3.2.tar.gz"
-  sha256 "bfc29388a55e4033bfa8dea08086665bcade091c9a98ace246f46cc9c7b8087b"
+  url "https://github.com/codedeviate/sqlt/archive/refs/tags/v0.3.3.tar.gz"
+  sha256 "4e01e1b1df893007c8baa63794a8e0888ef37d0fc076a3d9c018b382b5a0d159"
   license "MIT"
   head "https://github.com/codedeviate/sqlt.git", branch: "master"
 
@@ -10,6 +10,7 @@ class Sqlt < Formula
 
   def install
     system "cargo", "install", *std_cargo_args(path: ".")
+    man1.install "man/sqlt.1" if (buildpath/"man/sqlt.1").exist?
   end
 
   test do
