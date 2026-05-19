@@ -1,8 +1,8 @@
 class Webrunner < Formula
   desc "Zero-config development web server with CGI and .htaccess support"
   homepage "https://github.com/codedeviate/webrunner"
-  url "https://github.com/codedeviate/webrunner/archive/refs/tags/v0.7.0.tar.gz"
-  sha256 "bb6c5e16a51bcbd18a4d1500524571c2d78e8ec40687b8ea24ceaa7f719df27b"
+  url "https://github.com/codedeviate/webrunner/archive/refs/tags/v0.8.0.tar.gz"
+  sha256 "4d2068b6296db890eea5c3b942e9bfe5173b8cb89a200c0d3f7854837a897b0a"
   license "MIT"
   head "https://github.com/codedeviate/webrunner.git", branch: "master"
 
@@ -10,6 +10,7 @@ class Webrunner < Formula
 
   def install
     system "cargo", "install", *std_cargo_args(path: ".")
+    man1.install "man/webrunner.1"
   end
 
   test do
