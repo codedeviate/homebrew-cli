@@ -1,8 +1,8 @@
 class Tess < Formula
   desc "Less-style terminal pager with structured-log filtering and pretty-printing"
   homepage "https://github.com/codedeviate/tess"
-  url "https://github.com/codedeviate/tess/archive/refs/tags/v0.12.0.tar.gz"
-  sha256 "421bb72dae3fc7a5bafa43d132c78ff4307890feacf7451a8bbc3423f012be1f"
+  url "https://github.com/codedeviate/tess/archive/refs/tags/v0.18.0.tar.gz"
+  sha256 "88b3aec63d034fe953d0960572783d9b8121a60e41552d10a36ad885d433dc90"
   license "MIT"
   head "https://github.com/codedeviate/tess.git", branch: "master"
 
@@ -10,7 +10,7 @@ class Tess < Formula
 
   def install
     system "cargo", "install", *std_cargo_args(path: ".")
-    man1.install "MANUAL.md" => "tess.1" if (buildpath/"MANUAL.md").exist?
+    man1.install "man/tess.1" if (buildpath/"man/tess.1").exist?
   end
 
   test do
