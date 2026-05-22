@@ -1,8 +1,8 @@
 class Webrunner < Formula
   desc "Zero-config development web server with CGI and .htaccess support"
   homepage "https://github.com/codedeviate/webrunner"
-  url "https://github.com/codedeviate/webrunner/archive/refs/tags/v0.8.0.tar.gz"
-  sha256 "4d2068b6296db890eea5c3b942e9bfe5173b8cb89a200c0d3f7854837a897b0a"
+  url "https://github.com/codedeviate/webrunner/archive/refs/tags/v0.8.1.tar.gz"
+  sha256 "c6672f6188d3948f9b785b6cf526324faf17e6a86268f9de0022138845e962af"
   license "MIT"
   head "https://github.com/codedeviate/webrunner.git", branch: "master"
 
