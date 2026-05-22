@@ -1,8 +1,8 @@
 class Sqlt < Formula
   desc "Multi-dialect SQL parser and translator (MySQL/MariaDB/PostgreSQL/MSSQL/SQLite)"
   homepage "https://github.com/codedeviate/sqlt"
-  url "https://github.com/codedeviate/sqlt/archive/refs/tags/v0.3.4.tar.gz"
-  sha256 "69d568caba8bafeca269b562e76c43e3c768e7f5e0c408071f493adb9bf37183"
+  url "https://github.com/codedeviate/sqlt/archive/refs/tags/v0.3.5.tar.gz"
+  sha256 "6a1a9c5f8f176b9c9560e13544de3273ce235a7b8bb3a0a77313e152e3223173"
   license "MIT"
   head "https://github.com/codedeviate/sqlt.git", branch: "master"
 
