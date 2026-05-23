@@ -1,8 +1,8 @@
 class Recon < Formula
   desc "Network reconnaissance CLI with HTTP/TLS/DNS probes and Rhai scripting"
   homepage "https://github.com/codedeviate/recon"
-  url "https://github.com/codedeviate/recon/archive/refs/tags/v0.82.2.tar.gz"
-  sha256 "0f4ca1819f3ad1629523196d55c9f1fbb31830015891b5c28c4cc74331e6531e"
+  url "https://github.com/codedeviate/recon/archive/refs/tags/v0.85.0.tar.gz"
+  sha256 "225884c71844fdc89fe2a7244256bc5e29070e7bbf2876ed34e681e2010bf2ae"
   license "MIT"
   head "https://github.com/codedeviate/recon.git", branch: "master"
 
