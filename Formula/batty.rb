@@ -1,8 +1,8 @@
 class Batty < Formula
   desc "Cat clone with syntax highlighting, git integration, and Rhai support"
   homepage "https://github.com/codedeviate/batty"
-  url "https://github.com/codedeviate/batty/archive/refs/tags/v0.12.0.tar.gz"
-  sha256 "3fd00c3f3b57a8e69ad503f550af8610b27bdd7dfc3105be5f6912695dc41954"
+  url "https://github.com/codedeviate/batty/archive/refs/tags/v0.13.0.tar.gz"
+  sha256 "8bc17473a7bf9a2748137094ba8a9c79cf7cfa556d2c8b59796e21f77c98ac3e"
   license "MIT"
   head "https://github.com/codedeviate/batty.git", branch: "main"
 
