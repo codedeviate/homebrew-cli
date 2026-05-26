@@ -25,10 +25,11 @@ case "$FORMULA" in
     batty)                   REPO="batty" ;;
     tess)                    REPO="tess" ;;
     sqlt)                    REPO="sqlt" ;;
+    sercon)                  REPO="sercon" ;;
     webrunner)               REPO="webrunner" ;;
     *)
         echo "error: unknown formula '$FORMULA'" >&2
-        echo "known formulae: recon, recon-impersonate, batty, tess, sqlt, webrunner" >&2
+        echo "known formulae: recon, recon-impersonate, batty, tess, sqlt, sercon, webrunner" >&2
         exit 2
         ;;
 esac

@@ -22,6 +22,7 @@ brew install codedeviate/cli/<formula>
 | [`batty`](Formula/batty.rb) | Cat clone with syntax highlighting, git integration, and Rhai support |
 | [`recon`](Formula/recon.rb) | Versatile network reconnaissance CLI: HTTP/TLS/DNS, multi-protocol probes, and a Rhai script engine |
 | [`recon-impersonate`](Formula/recon-impersonate.rb) | `recon` with browser TLS+H2 fingerprint impersonation (BoringSSL via rquest) — conflicts with `recon` |
+| [`sercon`](Formula/sercon.rb) | Embeddable TypeScript script engine CLI (pure Go, no Node) |
 | [`sqlt`](Formula/sqlt.rb) | Multi-dialect SQL parser and translator (MySQL, MariaDB, PostgreSQL, MSSQL, SQLite) |
 | [`tess`](Formula/tess.rb) | Less-style terminal pager with structured-log filtering and pretty-printing |
 | [`webrunner`](Formula/webrunner.rb) | Zero-config development web server with CGI and .htaccess support |
