@@ -1,8 +1,8 @@
 class ReconImpersonate < Formula
   desc "Recon with browser TLS+H2 fingerprint impersonation (BoringSSL via wreq)"
   homepage "https://github.com/codedeviate/recon"
-  url "https://github.com/codedeviate/recon/archive/refs/tags/v0.94.1.tar.gz"
-  sha256 "ef60e3154074cab6431ab275105f6231702a9d4da2572664c7196d98c6062c24"
+  url "https://github.com/codedeviate/recon/archive/refs/tags/v0.95.0.tar.gz"
+  sha256 "afb0390ee9ce9d779efe533ce5ccd6d5144d76b1fc7fbbb987303b5bcc1e115f"
   license "MIT"
   head "https://github.com/codedeviate/recon.git", branch: "master"
 
@@ -14,7 +14,12 @@ class ReconImpersonate < Formula
     because: "both install the `recon` binary"
 
   def install
+    # --no-default-features drops the `ssh` feature (libssh2/OpenSSL),
+    # which collides with BoringSSL (wreq) at link time. See
+    # https://github.com/codedeviate/recon/issues/1. This variant has
+    # no scp/sftp/ssh support by design.
     system "cargo", "install",
+           "--no-default-features",
            "--features", "impersonate",
            *std_cargo_args(path: ".")
   end
