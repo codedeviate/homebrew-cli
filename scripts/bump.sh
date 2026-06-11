@@ -27,9 +27,10 @@ case "$FORMULA" in
     sqlt)                    REPO="sqlt" ;;
     sercon)                  REPO="sercon" ;;
     webrunner)               REPO="webrunner" ;;
+    witch)                   REPO="witch" ;;
     *)
         echo "error: unknown formula '$FORMULA'" >&2
-        echo "known formulae: recon, recon-impersonate, batty, tess, sqlt, sercon, webrunner" >&2
+        echo "known formulae: recon, recon-impersonate, batty, tess, sqlt, sercon, webrunner, witch" >&2
         exit 2
         ;;
 esac
