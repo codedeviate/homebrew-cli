@@ -1,8 +1,8 @@
 class ReconImpersonate < Formula
   desc "Recon with browser TLS+H2 fingerprint impersonation (BoringSSL via wreq)"
   homepage "https://github.com/codedeviate/recon"
-  url "https://github.com/codedeviate/recon/archive/refs/tags/v0.99.0.tar.gz"
-  sha256 "83d0b0fe6446312c07eda1a0baabf58fe03cf49cad5b7a929c374786e1db2d60"
+  url "https://github.com/codedeviate/recon/archive/refs/tags/v0.100.0.tar.gz"
+  sha256 "47c195d765b741ed729bd1027b73f2ec9cf2b9622f5015815c3a468ae600216f"
   license "MIT"
   head "https://github.com/codedeviate/recon.git", branch: "master"
 
