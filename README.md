@@ -35,6 +35,20 @@ brew install codedeviate/cli/recon              # lean build
 brew install codedeviate/cli/recon-impersonate  # adds BoringSSL + cmake at build time
 ```
 
+`witch` shares its name with the unrelated [`witch`](https://formulae.brew.sh/cask/witch)
+cask (the manytricks window/tab switcher), so a bare `brew install witch` or
+`brew upgrade witch` can resolve to the cask instead of this formula. Always use
+the fully-qualified name:
+
+```bash
+brew install codedeviate/cli/witch
+brew upgrade codedeviate/cli/witch
+```
+
+(A bare `brew upgrade` with no arguments still upgrades an already-installed
+`codedeviate/cli/witch` correctly — the collision only bites explicit
+`witch`-by-name commands.)
+
 ## Releasing a new version
 
 For each formula, when the upstream project tags a new release:
