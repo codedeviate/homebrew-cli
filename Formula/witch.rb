@@ -1,8 +1,8 @@
 class Witch < Formula
   desc "Typo-tolerant which that finds PATH commands even when misspelled"
   homepage "https://github.com/codedeviate/witch"
-  url "https://github.com/codedeviate/witch/archive/refs/tags/v0.1.1.tar.gz"
-  sha256 "a9c0a33ee7644beb2920e664383de0091faeb1e762e160e2ef857e78e74e6dd8"
+  url "https://github.com/codedeviate/witch/archive/refs/tags/v0.2.0.tar.gz"
+  sha256 "af8a7a8abd7af255e520ed50ffb61220fae5b528f995cb078b301bf0cc4e1433"
   license "MIT"
   head "https://github.com/codedeviate/witch.git", branch: "master"
 
