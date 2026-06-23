@@ -1,8 +1,8 @@
 class Sercon < Formula
   desc "Reconnaissance, shaped by code — TypeScript script engine"
   homepage "https://github.com/codedeviate/sercon"
-  url "https://github.com/codedeviate/sercon/archive/refs/tags/v0.64.0.tar.gz"
-  sha256 "044770734146c689b986a2b5fa3252a399ac7522f376a2c5b6b747b1999122d3"
+  url "https://github.com/codedeviate/sercon/archive/refs/tags/v0.65.0.tar.gz"
+  sha256 "10311f4d04ede27e7b5088e056576e05d24e6c50af7b8593ae17cb387fd35f10"
   license "MIT"
   head "https://github.com/codedeviate/sercon.git", branch: "master"
 
