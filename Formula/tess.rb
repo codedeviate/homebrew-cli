@@ -1,8 +1,8 @@
 class Tess < Formula
   desc "Less-style terminal pager with structured-log filtering and pretty-printing"
   homepage "https://github.com/codedeviate/tess"
-  url "https://github.com/codedeviate/tess/archive/refs/tags/v0.58.2.tar.gz"
-  sha256 "ed40d3053598b1fa66a4619d39d24dd723617570ae3a8ee18b7ca2f10aa7610c"
+  url "https://github.com/codedeviate/tess/archive/refs/tags/v0.59.0.tar.gz"
+  sha256 "b431e953f74d5a50f53b6459b6aaf00b698fc10570aa4dc798a9aaee1021c21f"
   license "MIT"
   head "https://github.com/codedeviate/tess.git", branch: "master"
 
