@@ -24,6 +24,7 @@ brew install codedeviate/cli/<formula>
 | [`recon-impersonate`](Formula/recon-impersonate.rb) | `recon` with browser TLS+H2 fingerprint impersonation (BoringSSL via rquest) — conflicts with `recon` |
 | [`sercon`](Formula/sercon.rb) | Embeddable TypeScript script engine CLI (pure Go, no Node) |
 | [`sqlt`](Formula/sqlt.rb) | Multi-dialect SQL parser and translator (MySQL, MariaDB, PostgreSQL, MSSQL, SQLite) |
+| [`stere`](Formula/stere.rb) | Structure-aware, searchable archive format for log files — block-addressable, parallel decode, grep without full decompress |
 | [`tess`](Formula/tess.rb) | Less-style terminal pager with structured-log filtering and pretty-printing |
 | [`webrunner`](Formula/webrunner.rb) | Zero-config development web server with CGI and .htaccess support |
 
