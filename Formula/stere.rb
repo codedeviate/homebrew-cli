@@ -1,8 +1,8 @@
 class Stere < Formula
   desc "Structure-aware, searchable archive format for log files"
   homepage "https://github.com/codedeviate/stere"
-  url "https://github.com/codedeviate/stere/archive/refs/tags/v0.2.0.tar.gz"
-  sha256 "27a790616a1700572ef3546e3913a3b022761eefc0628c5dca700f942b9dc72a"
+  url "https://github.com/codedeviate/stere/archive/refs/tags/v0.2.1.tar.gz"
+  sha256 "271d24a13dea4a477fdfae8f9cfd7fd100e4e80bf283cb67c8618c31be405953"
   license "MIT"
   head "https://github.com/codedeviate/stere.git", branch: "main"
 
