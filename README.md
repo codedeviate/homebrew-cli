@@ -25,6 +25,7 @@ brew install codedeviate/cli/<formula>
 | [`sercon`](Formula/sercon.rb) | Embeddable TypeScript script engine CLI (pure Go, no Node) |
 | [`sqlt`](Formula/sqlt.rb) | Multi-dialect SQL parser and translator (MySQL, MariaDB, PostgreSQL, MSSQL, SQLite) |
 | [`stere`](Formula/stere.rb) | Structure-aware, searchable archive format for log files — block-addressable, parallel decode, grep without full decompress |
+| [`stuffr`](Formula/stuffr.rb) | Universal compression and archive toolkit — eleven codecs, four containers, honest fidelity reporting |
 | [`tess`](Formula/tess.rb) | Less-style terminal pager with structured-log filtering and pretty-printing |
 | [`webrunner`](Formula/webrunner.rb) | Zero-config development web server with CGI and .htaccess support |
 
