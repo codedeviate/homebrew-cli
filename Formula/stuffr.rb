@@ -1,8 +1,8 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.3.1.tar.gz"
-  sha256 "d288dd40dac66970acf568253435141bc02bf5203f894cbb06d7a08a7417ffc2"
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.4.0.tar.gz"
+  sha256 "01d353c660adb53590aa209c9137ec7dc47a49db501d4da1c2219a04204f2b5d"
   license "MIT"
   head "https://github.com/codedeviate/stuffr.git", branch: "main"
 
@@ -47,6 +47,18 @@ class Stuffr < Formula
     # that collide on a case-insensitive filesystem.
     assert_equal "alpha\n", shell_output("#{bin}/stuffr cat backup.tar.gz --index 1")
 
-    assert_match "stuffr #{version}", shell_output("#{bin}/stuffr --version")
+    # 0.4.0's headline: three read-only legacy formats, and they are in the
+    # DEFAULT build rather than behind `--features legacy`. A bottle that
+    # silently lost them would install and pass every assertion above, so
+    # this is the one that would notice.
+    assert_match "lha", shell_output("#{bin}/stuffr formats")
+    assert_match "arj", shell_output("#{bin}/stuffr formats")
+
+    # And prove one of them actually decodes rather than merely registering.
+    # `compress` ships with macOS, so the input is real rather than a fixture
+    # this formula would have to carry.
+    (testpath/"plain.txt").write "legacy\n"
+    system "compress", "-f", testpath/"plain.txt"
+    assert_equal "legacy\n", shell_output("#{bin}/stuffr cat plain.txt.Z")
   end
 end
