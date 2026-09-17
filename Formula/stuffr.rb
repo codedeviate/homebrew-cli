@@ -1,8 +1,8 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.4.2.tar.gz"
-  sha256 "8ce93263e8a705caec4a7c1461176f7acbfe3f234c583e81d54abbdd948c8843"
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.5.0.tar.gz"
+  sha256 "a8865b1c57ed0ce435e6814be0b941f0cf19d22e09355b5124e0768313c1cd43"
   license "MIT"
   head "https://github.com/codedeviate/stuffr.git", branch: "main"
 
@@ -76,5 +76,31 @@ class Stuffr < Formula
     system bin/"stuffr", "pack", testpath/"proj/a.txt", "-o", "witness.Z"
     system "uncompress", "-f", testpath/"witness.Z"
     assert_equal "alpha\n", (testpath/"witness").read
+
+    # 0.5.0's headline: `stuffr salvage`, which recovers entries from archives
+    # nothing else will open. Asserting the verb merely exists would pass on a
+    # bottle that shipped it inert, so this destroys an archive and checks the
+    # bytes come back.
+    system bin/"stuffr", "pack", "proj", "-o", "full.zip"
+    assert_match "proj/a.txt", shell_output("#{bin}/stuffr salvage --list full.zip")
+
+    # Cut the tail off, taking the central directory with it. This is the
+    # shape salvage exists for: the archive's own map to its contents is gone,
+    # but every payload is still there behind a local header.
+    whole = (testpath/"full.zip").binread
+    (testpath/"cut.zip").binwrite(whole[0, whole.bytesize - 120])
+
+    # Both the normal reader and the system tool give up here — that contrast
+    # is the point, and it is what makes the recovery below meaningful rather
+    # than a second way to do what `unpack` already does.
+    assert_match "corrupt", shell_output("#{bin}/stuffr list cut.zip 2>&1", 5)
+    assert_match "cannot find zipfile directory",
+                 shell_output("unzip -l cut.zip 2>&1", 9)
+
+    # salvage scans for the headers instead of trusting the index, and the
+    # recovered bytes must be byte-identical to what went in.
+    system bin/"stuffr", "salvage", "cut.zip", "-C", "rescued"
+    assert_equal "alpha\n", (testpath/"rescued/proj/a.txt").read
+    assert_equal "beta\n", (testpath/"rescued/proj/sub/b.bin").read
   end
 end
