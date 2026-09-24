@@ -1,8 +1,8 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.5.0.tar.gz"
-  sha256 "a8865b1c57ed0ce435e6814be0b941f0cf19d22e09355b5124e0768313c1cd43"
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.6.1.tar.gz"
+  sha256 "faeab57c7785d082e25da1e32ed6eee285462d7863399287b3d4e49ee2e69ed4"
   license "MIT"
   head "https://github.com/codedeviate/stuffr.git", branch: "main"
 
@@ -102,5 +102,28 @@ class Stuffr < Formula
     system bin/"stuffr", "salvage", "cut.zip", "-C", "rescued"
     assert_equal "alpha\n", (testpath/"rescued/proj/a.txt").read
     assert_equal "beta\n", (testpath/"rescued/proj/sub/b.bin").read
+
+    # Salvage Stage 2's headline: salvage reaches four more formats — arc,
+    # zoo, lha and arj — where 0.5.0 knew only zip. That capability is
+    # 0.6.0's, but 0.6.0 was tagged and never published (a deep fuzz run
+    # against the tag found four exit-code defects), so 0.6.1 is the first
+    # release anyone can install it from. LHA is the one a bottle can prove
+    # end to end, because stuffr can both WRITE it (0.4.2) and salvage it;
+    # nothing on a clean macOS box creates an .lzh, so the alternative is a
+    # carried fixture, which proves less than a round trip through our own
+    # writer and a scanner that never consults it.
+    system bin/"stuffr", "pack", "proj", "-o", "legacy.lzh"
+    assert_match "proj/a.txt", shell_output("#{bin}/stuffr salvage --list legacy.lzh")
+
+    # Cut the tail off. The ordinary reader refuses the archive; salvage walks
+    # the headers it can still see and returns what survived. Asserting the
+    # verb merely accepts `--format lha` would pass on a bottle that shipped
+    # the scanner inert, so this destroys an archive and reads the bytes back.
+    whole_lzh = (testpath/"legacy.lzh").binread
+    (testpath/"cut.lzh").binwrite(whole_lzh[0, whole_lzh.bytesize - 40])
+    assert_match "corrupt", shell_output("#{bin}/stuffr list cut.lzh 2>&1", 5)
+
+    system bin/"stuffr", "salvage", "cut.lzh", "-C", "lharescue"
+    assert_equal "alpha\n", (testpath/"lharescue/proj/a.txt").read
   end
 end
