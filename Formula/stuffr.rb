@@ -1,8 +1,8 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.7.1.tar.gz"
-  sha256 "5a1e83652af345c5102074cb1ebd1052de97232616e847e41e5276bfc7b8b074"
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.8.0.tar.gz"
+  sha256 "d5a49f9c48539350b29ad456b52d04218ebfc8d3e4a8d70242e52c456ff45658"
   license "MIT"
   head "https://github.com/codedeviate/stuffr.git", branch: "main"
 
