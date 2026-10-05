@@ -30,9 +30,10 @@ case "$FORMULA" in
     stuffr)                  REPO="stuffr" ;;
     webrunner)               REPO="webrunner" ;;
     witch)                   REPO="witch" ;;
+    targrep)                 REPO="trg" ;;
     *)
         echo "error: unknown formula '$FORMULA'" >&2
-        echo "known formulae: recon, recon-impersonate, batty, tess, sqlt, sercon, stere, stuffr, webrunner, witch" >&2
+        echo "known formulae: recon, recon-impersonate, batty, tess, sqlt, sercon, stere, stuffr, webrunner, witch, targrep" >&2
         exit 2
         ;;
 esac
