@@ -23,6 +23,7 @@ class Stuffr < Formula
       stuffr can stand in for bzip2, bunzip2, bzcat and bzip2recover (bzip2
       1.0.8 behaviour, byte-identical output). The links are opt-in:
 
+        mkdir -p ~/.local/bin
         stuffr install-links --dir ~/.local/bin
 
       Put that directory ahead of /usr/bin on PATH to use them. The links point
@@ -145,6 +146,7 @@ class Stuffr < Formula
     # system's own bzip2 read the result (a second implementation agreeing),
     # and stuffr-as-`bunzip2` restore it. The output must also be
     # byte-identical to the system tool's, which is the release's promise.
+    mkdir testpath/"links"
     system bin/"stuffr", "install-links", "--dir", testpath/"links"
     assert_predicate testpath/"links/bzip2", :symlink?
     (testpath/"c.txt").write "compat\n" * 1000
