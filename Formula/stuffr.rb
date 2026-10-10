@@ -1,9 +1,10 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.10.4.tar.gz"
-  sha256 "e53ba75cacbe164a896745e7c389dfd09d26117f5c8014c18ab39203e53c4201"
-  license "MIT"
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.11.0.tar.gz"
+  sha256 "b42adbac56a37d0d074428bf5c9692d29971e43538410bbcb666190db94553db"
+  # stuffr-cli carries code ported from bzip2 1.0.8 (crates/stuffr-cli/LICENSE-bzip2).
+  license all_of: ["MIT", "bzip2-1.0.6"]
   head "https://github.com/codedeviate/stuffr.git", branch: "main"
 
   depends_on "rust" => :build
@@ -15,6 +16,19 @@ class Stuffr < Formula
     # packages. This is also why the crates.io spelling is
     # `cargo install stuffr-cli` rather than `cargo install stuffr`.
     system "cargo", "install", *std_cargo_args(path: "crates/stuffr-cli")
+  end
+
+  def caveats
+    <<~EOS
+      stuffr can stand in for bzip2, bunzip2, bzcat and bzip2recover (bzip2
+      1.0.8 behaviour, byte-identical output). The links are opt-in:
+
+        stuffr install-links --dir ~/.local/bin
+
+      Put that directory ahead of /usr/bin on PATH to use them. The links point
+      at #{opt_bin}/stuffr, so they survive `brew upgrade`;
+      `stuffr install-links --dir DIR --remove` takes them away again.
+    EOS
   end
 
   test do
@@ -125,5 +139,22 @@ class Stuffr < Formula
 
     system bin/"stuffr", "salvage", "cut.lzh", "-C", "lharescue"
     assert_equal "alpha\n", (testpath/"lharescue/proj/a.txt").read
+
+    # 0.11.0's headline: compatibility links. Make them in a scratch dir the
+    # way a user would, then compress THROUGH the `bzip2` name and have the
+    # system's own bzip2 read the result (a second implementation agreeing),
+    # and stuffr-as-`bunzip2` restore it. The output must also be
+    # byte-identical to the system tool's, which is the release's promise.
+    system bin/"stuffr", "install-links", "--dir", testpath/"links"
+    assert_predicate testpath/"links/bzip2", :symlink?
+    (testpath/"c.txt").write "compat\n" * 1000
+    cp testpath/"c.txt", testpath/"ref.txt"
+    system testpath/"links/bzip2", "-k", testpath/"c.txt"
+    system "/usr/bin/bzip2", "-k", testpath/"ref.txt"
+    assert_equal (testpath/"ref.txt.bz2").binread, (testpath/"c.txt.bz2").binread
+    assert_equal "compat\n" * 1000, shell_output("/usr/bin/bzip2 -dc #{testpath}/c.txt.bz2")
+    rm testpath/"c.txt"
+    system testpath/"links/bunzip2", testpath/"c.txt.bz2"
+    assert_equal "compat\n" * 1000, (testpath/"c.txt").read
   end
 end
