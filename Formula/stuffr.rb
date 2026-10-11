@@ -1,10 +1,12 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.11.0.tar.gz"
-  sha256 "b42adbac56a37d0d074428bf5c9692d29971e43538410bbcb666190db94553db"
-  # stuffr-cli carries code ported from bzip2 1.0.8 (crates/stuffr-cli/LICENSE-bzip2).
-  license all_of: ["MIT", "bzip2-1.0.6"]
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.12.0.tar.gz"
+  sha256 "e6ce650ddb6e009fade836483d766180da277930903f3874560bd112402142ce"
+  # stuffr-cli carries code ported from bzip2 1.0.8 (crates/stuffr-cli/LICENSE-bzip2)
+  # and from Apple's BSD-licensed gzip sources (crates/stuffr-cli/LICENSE-gzip-bsd);
+  # stuffr-formats' pack decoder is BSD-2-Clause (crates/stuffr-formats/LICENSE-unpack-bsd).
+  license all_of: ["MIT", "bzip2-1.0.6", "BSD-2-Clause", "BSD-3-Clause"]
   head "https://github.com/codedeviate/stuffr.git", branch: "main"
 
   depends_on "rust" => :build
@@ -21,7 +23,11 @@ class Stuffr < Formula
   def caveats
     <<~EOS
       stuffr can stand in for bzip2, bunzip2, bzcat and bzip2recover (bzip2
-      1.0.8 behaviour, byte-identical output). The links are opt-in:
+      1.0.8 behaviour, byte-identical output) and for gzip, gunzip, zcat and
+      gzcat (Apple's gzip behaviour on macOS; STUFFR_GZIP_FLAVOR=gnu switches
+      to GNU gzip's). This build's gzip output is compatible with Apple's, not
+      byte-identical: identical bytes need the C tier (--features c-backed).
+      The links are opt-in:
 
         mkdir -p ~/.local/bin
         stuffr install-links --dir ~/.local/bin
@@ -158,5 +164,17 @@ class Stuffr < Formula
     rm testpath/"c.txt"
     system testpath/"links/bunzip2", testpath/"c.txt.bz2"
     assert_equal "compat\n" * 1000, (testpath/"c.txt").read
+
+    # 0.12.0's headline: the gzip family. This bottle builds the pure tier, so
+    # the promise is compatible output, not Apple's exact bytes: the system's
+    # own gzip must read what stuffr-as-`gzip` wrote, and stuffr-as-`gunzip`
+    # must restore it.
+    assert_predicate testpath/"links/gzip", :symlink?
+    (testpath/"g.txt").write "gzip compat\n" * 1000
+    system testpath/"links/gzip", "-k", testpath/"g.txt"
+    assert_equal "gzip compat\n" * 1000, shell_output("/usr/bin/gzip -dc #{testpath}/g.txt.gz")
+    rm testpath/"g.txt"
+    system testpath/"links/gunzip", testpath/"g.txt.gz"
+    assert_equal "gzip compat\n" * 1000, (testpath/"g.txt").read
   end
 end
