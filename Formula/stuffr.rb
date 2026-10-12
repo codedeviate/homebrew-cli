@@ -1,12 +1,14 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.12.0.tar.gz"
-  sha256 "e6ce650ddb6e009fade836483d766180da277930903f3874560bd112402142ce"
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.13.0.tar.gz"
+  sha256 "23ca2c407fd0bca213da7292b52c996b8354045efd5856d8f909e3b868889592"
   # stuffr-cli carries code ported from bzip2 1.0.8 (crates/stuffr-cli/LICENSE-bzip2)
   # and from Apple's BSD-licensed gzip sources (crates/stuffr-cli/LICENSE-gzip-bsd);
-  # stuffr-formats' pack decoder is BSD-2-Clause (crates/stuffr-formats/LICENSE-unpack-bsd).
-  license all_of: ["MIT", "bzip2-1.0.6", "BSD-2-Clause", "BSD-3-Clause"]
+  # stuffr-formats' pack decoder is BSD-2-Clause (crates/stuffr-formats/LICENSE-unpack-bsd);
+  # the xz family is ported from XZ Utils 5.8.4 under 0BSD (crates/stuffr-cli/LICENSE-xz,
+  # crates/stuffr-formats/LICENSE-xz-memusage).
+  license all_of: ["MIT", "bzip2-1.0.6", "BSD-2-Clause", "BSD-3-Clause", "0BSD"]
   head "https://github.com/codedeviate/stuffr.git", branch: "main"
 
   depends_on "rust" => :build
@@ -25,8 +27,10 @@ class Stuffr < Formula
       stuffr can stand in for bzip2, bunzip2, bzcat and bzip2recover (bzip2
       1.0.8 behaviour, byte-identical output) and for gzip, gunzip, zcat and
       gzcat (Apple's gzip behaviour on macOS; STUFFR_GZIP_FLAVOR=gnu switches
-      to GNU gzip's). This build's gzip output is compatible with Apple's, not
-      byte-identical: identical bytes need the C tier (--features c-backed).
+      to GNU gzip's), and for xz, unxz, xzcat, lzma, unlzma and lzcat (XZ
+      Utils 5.8.4 behaviour). This build's gzip and xz output is compatible
+      with the real tools', not byte-identical: identical bytes need the C
+      tier (--features c-backed).
       The links are opt-in:
 
         mkdir -p ~/.local/bin
@@ -176,5 +180,15 @@ class Stuffr < Formula
     rm testpath/"g.txt"
     system testpath/"links/gunzip", testpath/"g.txt.gz"
     assert_equal "gzip compat\n" * 1000, (testpath/"g.txt").read
+
+    # 0.13.0's headline: the xz family. Again compatible, not identical, on
+    # this pure-tier bottle. No xz ships with macOS, but Apple's gzip decodes
+    # .xz through its own liblzma, so it is the external witness here; then
+    # stuffr-as-`xzcat` reads the same file back.
+    assert_predicate testpath/"links/xz", :symlink?
+    (testpath/"x.txt").write "xz compat\n" * 1000
+    system testpath/"links/xz", "-k", testpath/"x.txt"
+    assert_equal "xz compat\n" * 1000, shell_output("/usr/bin/gzip -dc #{testpath}/x.txt.xz")
+    assert_equal "xz compat\n" * 1000, shell_output("#{testpath}/links/xzcat #{testpath}/x.txt.xz")
   end
 end
