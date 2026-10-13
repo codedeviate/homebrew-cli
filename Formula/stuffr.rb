@@ -1,13 +1,14 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.13.2.tar.gz"
-  sha256 "b16944fa302f72593b06e89a181e19fdbeb190fe98f7926edda4dfa166cda60b"
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.14.0.tar.gz"
+  sha256 "e132bfa51ecfd8547d455615e04a4c21e1e4d1f66b16b62d96d091e2372992b7"
   # stuffr-cli carries code ported from bzip2 1.0.8 (crates/stuffr-cli/LICENSE-bzip2)
   # and from Apple's BSD-licensed gzip sources (crates/stuffr-cli/LICENSE-gzip-bsd);
   # stuffr-formats' pack decoder is BSD-2-Clause (crates/stuffr-formats/LICENSE-unpack-bsd);
   # the xz family is ported from XZ Utils 5.8.4 under 0BSD (crates/stuffr-cli/LICENSE-xz,
-  # crates/stuffr-formats/LICENSE-xz-memusage).
+  # crates/stuffr-formats/LICENSE-xz-memusage); the zstd family is ported from zstd 1.5.7
+  # under BSD-3-Clause (crates/stuffr-cli/LICENSE-zstd), and this build links libzstd.
   license all_of: ["MIT", "bzip2-1.0.6", "BSD-2-Clause", "BSD-3-Clause", "0BSD"]
   head "https://github.com/codedeviate/stuffr.git", branch: "main"
 
@@ -19,7 +20,11 @@ class Stuffr < Formula
     # installed directly — `cargo install` refuses a path with multiple
     # packages. This is also why the crates.io spelling is
     # `cargo install stuffr-cli` rather than `cargo install stuffr`.
-    system "cargo", "install", *std_cargo_args(path: "crates/stuffr-cli")
+    #
+    # `zstd-c` builds libzstd 1.5.7 in (vendored by zstd-sys, pinned by the
+    # lock file that std_cargo_args' `--locked` honours), so the zstd links
+    # write zstd's exact bytes and support dictionaries and --train.
+    system "cargo", "install", *std_cargo_args(path: "crates/stuffr-cli", features: ["zstd-c"])
   end
 
   def caveats
@@ -28,9 +33,10 @@ class Stuffr < Formula
       1.0.8 behaviour, byte-identical output) and for gzip, gunzip, zcat and
       gzcat (Apple's gzip behaviour on macOS; STUFFR_GZIP_FLAVOR=gnu switches
       to GNU gzip's), and for xz, unxz, xzcat, lzma, unlzma and lzcat (XZ
-      Utils 5.8.4 behaviour). This build's gzip and xz output is compatible
-      with the real tools', not byte-identical: identical bytes need the C
-      tier (--features c-backed).
+      Utils 5.8.4 behaviour), and for zstd, unzstd, zstdcat and zstdmt (zstd
+      1.5.7 behaviour; this build's zstd output is byte-identical to zstd's).
+      This build's gzip and xz output is compatible with the real tools', not
+      byte-identical: identical bytes need the C tier (--features c-backed).
       The links are opt-in:
 
         mkdir -p ~/.local/bin
@@ -190,5 +196,17 @@ class Stuffr < Formula
     system testpath/"links/xz", "-k", testpath/"x.txt"
     assert_equal "xz compat\n" * 1000, shell_output("/usr/bin/gzip -dc #{testpath}/x.txt.xz")
     assert_equal "xz compat\n" * 1000, shell_output("#{testpath}/links/xzcat #{testpath}/x.txt.xz")
+
+    # 0.14.0's headline: the zstd family, built on the C tier (`zstd-c`), so
+    # it is libzstd 1.5.7 underneath. Compress at -19 keeping the input,
+    # check the frame with -t, and read it back through `zstdcat`. The
+    # version answer proves which libzstd the bottle linked.
+    assert_predicate testpath/"links/zstd", :symlink?
+    (testpath/"z.txt").write "zstd compat\n" * 1000
+    system testpath/"links/zstd", "-q", "-19", "-k", testpath/"z.txt"
+    assert_path_exists testpath/"z.txt"
+    system testpath/"links/zstd", "-q", "-t", testpath/"z.txt.zst"
+    assert_equal (testpath/"z.txt").read, shell_output("#{testpath}/links/zstdcat #{testpath}/z.txt.zst")
+    assert_equal "1.5.7", shell_output("#{testpath}/links/zstd -qV").strip
   end
 end
