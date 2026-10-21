@@ -1,8 +1,8 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.15.1.tar.gz"
-  sha256 "c76180442d707bf0e96380e9e8d990ea7647772b356e2e77ba7ad7ae29f967de"
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.16.0.tar.gz"
+  sha256 "21628649d1725875620d8a1682d24f7dde73e715e2c2b835374dbfc0a4eabbbf"
   # stuffr-cli carries code ported from bzip2 1.0.8 (crates/stuffr-cli/LICENSE-bzip2)
   # and from Apple's BSD-licensed gzip sources (crates/stuffr-cli/LICENSE-gzip-bsd);
   # stuffr-formats' pack decoder is BSD-2-Clause (crates/stuffr-formats/LICENSE-unpack-bsd);
@@ -40,7 +40,9 @@ class Stuffr < Formula
       Utils 5.8.4 behaviour), and for zstd, unzstd, zstdcat and zstdmt (zstd
       1.5.7 behaviour; this build's zstd output is byte-identical to zstd's),
       and for lz4, unlz4, lz4cat and lz4c (lz4 1.10.0 behaviour; this build's
-      lz4 output is byte-identical to lz4's).
+      lz4 output is byte-identical to lz4's), and for unzip, zipinfo and
+      funzip (Info-ZIP UnZip 6.0: Apple's build on macOS;
+      STUFFR_UNZIP_FLAVOR=ubuntu switches to Ubuntu's 6.0-28ubuntu4.1).
       This build's gzip and xz output is compatible with the real tools', not
       byte-identical: identical bytes need the C tier (--features c-backed).
       The links are opt-in:
@@ -224,5 +226,18 @@ class Stuffr < Formula
     system testpath/"links/lz4", "-q", "-t", testpath/"l.txt.lz4"
     assert_equal (testpath/"l.txt").read, shell_output("#{testpath}/links/lz4cat #{testpath}/l.txt.lz4")
     assert_match "v1.10.0", shell_output("#{testpath}/links/lz4 -V 2>&1")
+
+    # 0.16.0's headline: the unzip family, a port of Info-ZIP UnZip 6.0 that
+    # behaves as macOS's own /usr/bin/unzip here. Its listing and its test of
+    # the zip stuffr packed above must be byte-identical to the system tool's,
+    # and extracting through the link must restore the tree.
+    assert_predicate testpath/"links/unzip", :symlink?
+    assert_equal shell_output("/usr/bin/unzip -l #{testpath}/full.zip"),
+                 shell_output("#{testpath}/links/unzip -l #{testpath}/full.zip")
+    assert_equal shell_output("/usr/bin/unzip -t #{testpath}/full.zip"),
+                 shell_output("#{testpath}/links/unzip -t #{testpath}/full.zip")
+    system testpath/"links/unzip", "-q", testpath/"full.zip", "-d", testpath/"unzipped"
+    assert_equal "alpha\n", (testpath/"unzipped/proj/a.txt").read
+    assert_equal "beta\n", (testpath/"unzipped/proj/sub/b.bin").read
   end
 end
