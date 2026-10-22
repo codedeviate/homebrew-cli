@@ -1,8 +1,8 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.16.1.tar.gz"
-  sha256 "2e3273c8576ad466d692f0e6dba405ebe0396db8d9bf0501f8e98fd9445ae158"
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.17.0.tar.gz"
+  sha256 "c1bab99f9ff8edaee0414161bef1a398066063241ee4f7d7519937931a30e52c"
   # stuffr-cli carries code ported from bzip2 1.0.8 (crates/stuffr-cli/LICENSE-bzip2)
   # and from Apple's BSD-licensed gzip sources (crates/stuffr-cli/LICENSE-gzip-bsd);
   # stuffr-formats' pack decoder is BSD-2-Clause (crates/stuffr-formats/LICENSE-unpack-bsd);
@@ -95,6 +95,15 @@ class Stuffr < Formula
     assert_match "arj", formats
     assert_match "arc", formats
     assert_match "zoo", formats
+
+    # 0.17.0: `stuffr bench` times every writable codec on the user's own
+    # files. A release build is the only kind that times (a debug build
+    # refuses), so the installed binary must produce a row per codec.
+    (testpath/"bench.txt").write "GET /index.html HTTP/1.1 200 1043\n" * 2000
+    table = shell_output("#{bin}/stuffr bench --table-only #{testpath}/bench.txt")
+    assert_match "gzip", table
+    assert_match "xz", table
+    assert_match "zstd", table
 
     # Prove `.Z` decodes rather than merely registering. `compress` ships with
     # macOS, so the input is real rather than a fixture this formula carries.
