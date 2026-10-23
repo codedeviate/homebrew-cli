@@ -1,8 +1,8 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.17.1.tar.gz"
-  sha256 "58f62b53f8eb7361ffd2a3b3fac4cf49b777f48d9a4fe800a6e8dc425f57d3bd"
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.18.0.tar.gz"
+  sha256 "2c2235e2ab7fd7e0fad8b9582c18c37cffd256a3c51ebe9e4ad2529f393cd69f"
   # stuffr-cli carries code ported from bzip2 1.0.8 (crates/stuffr-cli/LICENSE-bzip2)
   # and from Apple's BSD-licensed gzip sources (crates/stuffr-cli/LICENSE-gzip-bsd);
   # stuffr-formats' pack decoder is BSD-2-Clause (crates/stuffr-formats/LICENSE-unpack-bsd);
@@ -248,5 +248,15 @@ class Stuffr < Formula
     system testpath/"links/unzip", "-q", testpath/"full.zip", "-d", testpath/"unzipped"
     assert_equal "alpha\n", (testpath/"unzipped/proj/a.txt").read
     assert_equal "beta\n", (testpath/"unzipped/proj/sub/b.bin").read
+
+    # 0.18.0: `compress`/`uncompress` behave as Apple's /usr/bin/compress on
+    # macOS — the same bytes, and the round trip restores the file.
+    assert_predicate testpath/"links/compress", :symlink?
+    (testpath/"lzw.txt").write "GET /index.html HTTP/1.1 200 1043\n" * 2000
+    assert_equal shell_output("/usr/bin/compress -c #{testpath}/lzw.txt"),
+                 shell_output("#{testpath}/links/compress -c #{testpath}/lzw.txt")
+    system testpath/"links/compress", testpath/"lzw.txt"
+    system testpath/"links/uncompress", testpath/"lzw.txt.Z"
+    assert_equal "GET /index.html HTTP/1.1 200 1043\n" * 2000, (testpath/"lzw.txt").read
   end
 end
