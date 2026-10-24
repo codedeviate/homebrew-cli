@@ -1,8 +1,8 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.18.0.tar.gz"
-  sha256 "2c2235e2ab7fd7e0fad8b9582c18c37cffd256a3c51ebe9e4ad2529f393cd69f"
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.18.1.tar.gz"
+  sha256 "8db791b47dd3fe9e325925138636cf1a3d0d2e40f02d5999734ad22c887300c1"
   # stuffr-cli carries code ported from bzip2 1.0.8 (crates/stuffr-cli/LICENSE-bzip2)
   # and from Apple's BSD-licensed gzip sources (crates/stuffr-cli/LICENSE-gzip-bsd);
   # stuffr-formats' pack decoder is BSD-2-Clause (crates/stuffr-formats/LICENSE-unpack-bsd);
@@ -104,6 +104,9 @@ class Stuffr < Formula
     assert_match "gzip", table
     assert_match "xz", table
     assert_match "zstd", table
+    # 0.18.1: each row also reports its peak compress and decompress memory.
+    assert_match "c-mem", table
+    assert_match "d-mem", table
 
     # Prove `.Z` decodes rather than merely registering. `compress` ships with
     # macOS, so the input is real rather than a fixture this formula carries.
