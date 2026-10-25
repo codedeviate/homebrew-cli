@@ -1,8 +1,8 @@
 class Targrep < Formula
   desc "Search inside .tgz, .tar.zst and .tar.xz archives with ripgrep-style flags"
   homepage "https://github.com/codedeviate/trg"
-  url "https://github.com/codedeviate/trg/archive/refs/tags/v0.7.2.tar.gz"
-  sha256 "9b16c8472acbc562fd8b1ac40f3cd5ee017e611854aa5a46799d647a1db23006"
+  url "https://github.com/codedeviate/trg/archive/refs/tags/v0.8.0.tar.gz"
+  sha256 "ea3684ed64f924639ab26f3ad7288d5c28b69a5a9f8876412988e908140dc51f"
   license "MIT"
   head "https://github.com/codedeviate/trg.git", branch: "master"
 
