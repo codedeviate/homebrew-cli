@@ -1,8 +1,8 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.18.2.tar.gz"
-  sha256 "4a20b182acf0466ad21223f295890a1ce431e15813382315f6acae07e06930d2"
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.19.0.tar.gz"
+  sha256 "36b83fa08c881645f04ac3a0242b06783b4e92d6878538e41c9c55ad84a24f5a"
   # stuffr-cli carries code ported from bzip2 1.0.8 (crates/stuffr-cli/LICENSE-bzip2)
   # and from Apple's BSD-licensed gzip sources (crates/stuffr-cli/LICENSE-gzip-bsd);
   # stuffr-formats' pack decoder is BSD-2-Clause (crates/stuffr-formats/LICENSE-unpack-bsd);
@@ -42,7 +42,9 @@ class Stuffr < Formula
       and for lz4, unlz4, lz4cat and lz4c (lz4 1.10.0 behaviour; this build's
       lz4 output is byte-identical to lz4's), and for unzip, zipinfo and
       funzip (Info-ZIP UnZip 6.0: Apple's build on macOS;
-      STUFFR_UNZIP_FLAVOR=ubuntu switches to Ubuntu's 6.0-28ubuntu4.1).
+      STUFFR_UNZIP_FLAVOR=ubuntu switches to Ubuntu's 6.0-28ubuntu4.1),
+      and for zip, zipcloak, zipnote and zipsplit (Info-ZIP Zip 3.0, the same
+      archives as the system zip), and for compress and uncompress.
       This build's gzip and xz output is compatible with the real tools', not
       byte-identical: identical bytes need the C tier (--features c-backed).
       The links are opt-in:
@@ -261,5 +263,14 @@ class Stuffr < Formula
     system testpath/"links/compress", testpath/"lzw.txt"
     system testpath/"links/uncompress", testpath/"lzw.txt.Z"
     assert_equal "GET /index.html HTTP/1.1 200 1043\n" * 2000, (testpath/"lzw.txt").read
+
+    # 0.19.0's headline: the zip family (Info-ZIP Zip 3.0, Apple's build on
+    # macOS). Zipping the same tree through the link and through the system's
+    # /usr/bin/zip must write the same archive, byte for byte.
+    assert_predicate testpath/"links/zip", :symlink?
+    system "/usr/bin/zip", "-q", "-X", "-r", testpath/"ref.zip", "proj"
+    system testpath/"links/zip", "-q", "-X", "-r", testpath/"ours.zip", "proj"
+    assert_equal (testpath/"ref.zip").binread, (testpath/"ours.zip").binread
+    assert_match "proj/sub/b.bin", shell_output("/usr/bin/unzip -l #{testpath}/ours.zip")
   end
 end
