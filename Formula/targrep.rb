@@ -1,8 +1,8 @@
 class Targrep < Formula
-  desc "Search compressed log archives (gzip, zstd, xz, bzip2, lz4) with ripgrep flags"
+  desc "Search log archives (tar, zip; gzip, zstd, xz, bzip2, lz4, .Z) with rg flags"
   homepage "https://github.com/codedeviate/trg"
-  url "https://github.com/codedeviate/trg/archive/refs/tags/v0.9.0.tar.gz"
-  sha256 "0e23241f83f26baef3efd52e765b962fb1c54410c6033a81e4e3be4e1ce2ad27"
+  url "https://github.com/codedeviate/trg/archive/refs/tags/v0.10.0.tar.gz"
+  sha256 "9a2c7a963c6b39d1953fec9de81d3efe06c851a6b926c2ab5f3b36726081c2ba"
   license "MIT"
   head "https://github.com/codedeviate/trg.git", branch: "master"
 
@@ -26,5 +26,8 @@ class Targrep < Formula
 
     system "tar", "-cjf", testpath/"logs.tar.bz2", "-C", testpath, "logs"
     assert_match "needle in a haystack", shell_output("#{bin}/trg needle #{testpath}/logs.tar.bz2")
+
+    system "zip", "-q", "-r", testpath/"logs.zip", "logs"
+    assert_match "logs/app.log:2:needle", shell_output("#{bin}/trg needle #{testpath}/logs.zip")
   end
 end
