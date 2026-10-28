@@ -1,8 +1,8 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.19.0.tar.gz"
-  sha256 "36b83fa08c881645f04ac3a0242b06783b4e92d6878538e41c9c55ad84a24f5a"
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.20.0.tar.gz"
+  sha256 "cc9fb2e443c46915993499cd2d2bfe033e52b41677546b8b5246e03d7cc02880"
   # stuffr-cli carries code ported from bzip2 1.0.8 (crates/stuffr-cli/LICENSE-bzip2)
   # and from Apple's BSD-licensed gzip sources (crates/stuffr-cli/LICENSE-gzip-bsd);
   # stuffr-formats' pack decoder is BSD-2-Clause (crates/stuffr-formats/LICENSE-unpack-bsd);
@@ -10,11 +10,14 @@ class Stuffr < Formula
   # crates/stuffr-formats/LICENSE-xz-memusage); the zstd family is ported from zstd 1.5.7
   # under BSD-3-Clause (crates/stuffr-cli/LICENSE-zstd), and this build links libzstd;
   # the lz4 family is a clean-room implementation (lz4's GPL command line tool was not
-  # read) and this build links liblz4 1.10.0, BSD-2-Clause (crates/stuffr-cli/LICENSE-lz4).
+  # read) and this build links liblz4 1.10.0, BSD-2-Clause (crates/stuffr-cli/LICENSE-lz4);
+  # the brotli family is ported from brotli 1.2.1's MIT tool and this build compiles the
+  # vendored libbrotli 1.2.1, MIT (crates/stuffr-formats/LICENSE-brotli).
   license all_of: ["MIT", "bzip2-1.0.6", "BSD-2-Clause", "BSD-3-Clause", "0BSD"]
   head "https://github.com/codedeviate/stuffr.git", branch: "main"
 
   depends_on "rust" => :build
+  depends_on "brotli" => :test
 
   def install
     # Cargo workspace: the binary lives in crates/stuffr-cli (the `stuffr`
@@ -28,7 +31,10 @@ class Stuffr < Formula
     # write zstd's exact bytes and support dictionaries and --train.
     # `lz4-c` does the same for liblz4 1.10.0 (vendored by lz4-sys), so the
     # lz4 links write lz4's exact bytes at every level.
-    system "cargo", "install", *std_cargo_args(path: "crates/stuffr-cli", features: ["zstd-c", "lz4-c"])
+    # `brotli-c` compiles the libbrotli 1.2.1 sources vendored in
+    # stuffr-formats, so the brotli links write brotli's exact bytes.
+    system "cargo", "install", *std_cargo_args(path: "crates/stuffr-cli",
+                                               features: ["zstd-c", "lz4-c", "brotli-c"])
   end
 
   def caveats
@@ -44,7 +50,9 @@ class Stuffr < Formula
       funzip (Info-ZIP UnZip 6.0: Apple's build on macOS;
       STUFFR_UNZIP_FLAVOR=ubuntu switches to Ubuntu's 6.0-28ubuntu4.1),
       and for zip, zipcloak, zipnote and zipsplit (Info-ZIP Zip 3.0, the same
-      archives as the system zip), and for compress and uncompress.
+      archives as the system zip), and for compress and uncompress, and for
+      brotli, unbrotli and brcat (brotli 1.2.1 behaviour; this build's
+      brotli output is byte-identical to brotli's).
       This build's gzip and xz output is compatible with the real tools', not
       byte-identical: identical bytes need the C tier (--features c-backed).
       The links are opt-in:
@@ -272,5 +280,18 @@ class Stuffr < Formula
     system testpath/"links/zip", "-q", "-X", "-r", testpath/"ours.zip", "proj"
     assert_equal (testpath/"ref.zip").binread, (testpath/"ours.zip").binread
     assert_match "proj/sub/b.bin", shell_output("/usr/bin/unzip -l #{testpath}/ours.zip")
+
+    # 0.20.0's headline: the brotli family, built on the C tier (`brotli-c`,
+    # the vendored libbrotli 1.2.1). Homebrew's own brotli is the external
+    # witness: the same input at -q 9 must give the same bytes, brcat must
+    # read them back, and the version line names the brotli it behaves as.
+    assert_predicate testpath/"links/brotli", :symlink?
+    (testpath/"br.txt").write "GET /index.html HTTP/1.1 200 1043\n" * 2000
+    brotli = Formula["brotli"].opt_bin/"brotli"
+    assert_equal shell_output("#{brotli} -q 9 -c #{testpath}/br.txt"),
+                 shell_output("#{testpath}/links/brotli -q 9 -c #{testpath}/br.txt")
+    system testpath/"links/brotli", "-q", "9", "-o", testpath/"br.txt.br", testpath/"br.txt"
+    assert_equal (testpath/"br.txt").read, shell_output("#{testpath}/links/brcat #{testpath}/br.txt.br")
+    assert_equal "brotli 1.2.1", shell_output("#{testpath}/links/brotli -V").strip
   end
 end
