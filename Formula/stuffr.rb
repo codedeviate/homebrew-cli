@@ -1,8 +1,8 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.20.0.tar.gz"
-  sha256 "cc9fb2e443c46915993499cd2d2bfe033e52b41677546b8b5246e03d7cc02880"
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.21.0.tar.gz"
+  sha256 "41fcedda37022a4e011cf67d27623d967b9b52baab892dc194aec5dc544fd0eb"
   # stuffr-cli carries code ported from bzip2 1.0.8 (crates/stuffr-cli/LICENSE-bzip2)
   # and from Apple's BSD-licensed gzip sources (crates/stuffr-cli/LICENSE-gzip-bsd);
   # stuffr-formats' pack decoder is BSD-2-Clause (crates/stuffr-formats/LICENSE-unpack-bsd);
@@ -293,5 +293,14 @@ class Stuffr < Formula
     system testpath/"links/brotli", "-q", "9", "-o", testpath/"br.txt.br", testpath/"br.txt"
     assert_equal (testpath/"br.txt").read, shell_output("#{testpath}/links/brcat #{testpath}/br.txt.br")
     assert_equal "brotli 1.2.1", shell_output("#{testpath}/links/brotli -V").strip
+
+    # 0.21.0's headline: `stuffr ls` on a folder lists what stuffr can open
+    # there, known by its bytes, with subfolders as [FOLDER] rows. On a file
+    # it still lists the archive's entries, exactly as `stuffr list` does.
+    listing = shell_output("#{bin}/stuffr ls #{testpath}")
+    assert_match(/tar\+gzip .*backup\.tar\.gz/, listing)
+    assert_match(/zip .*full\.zip/, listing)
+    assert_match(/\[FOLDER\] .*proj/, listing)
+    assert_match "proj/a.txt", shell_output("#{bin}/stuffr ls #{testpath}/backup.tar.gz")
   end
 end
