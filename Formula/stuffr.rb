@@ -1,8 +1,8 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.21.0.tar.gz"
-  sha256 "41fcedda37022a4e011cf67d27623d967b9b52baab892dc194aec5dc544fd0eb"
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.22.0.tar.gz"
+  sha256 "24942dc97681ec2724d00110fc981e323d2cefe87a15b8cb17a99c1563a98078"
   # stuffr-cli carries code ported from bzip2 1.0.8 (crates/stuffr-cli/LICENSE-bzip2)
   # and from Apple's BSD-licensed gzip sources (crates/stuffr-cli/LICENSE-gzip-bsd);
   # stuffr-formats' pack decoder is BSD-2-Clause (crates/stuffr-formats/LICENSE-unpack-bsd);
@@ -302,5 +302,17 @@ class Stuffr < Formula
     assert_match(/zip .*full\.zip/, listing)
     assert_match(/\[FOLDER\] .*proj/, listing)
     assert_match "proj/a.txt", shell_output("#{bin}/stuffr ls #{testpath}/backup.tar.gz")
+
+    # 0.22.0: identification is truthful. A file whose name says arc (`.pak`)
+    # but whose bytes are not arc's is not listed; one whose bytes begin like
+    # zlib but end in an Apple disk image's `koly` trailer is refused, exit 3.
+    mkdir testpath/"truth"
+    (testpath/"truth/chrome.pak").binwrite("\x05\x00\x00\x00\x01\x00\x00\x00" + ("\x00" * 64))
+    truth = shell_output("#{bin}/stuffr ls #{testpath}/truth")
+    refute_match "chrome.pak", truth
+    assert_match "0 of 1 files shown", truth
+    koly = "koly" + [4, 512].pack("NN") + ("\x00" * 500)
+    (testpath/"truth/image.dmg").binwrite("\x78\x9c" + ("\x00" * 600) + koly)
+    assert_match "Apple disk image", shell_output("#{bin}/stuffr cat #{testpath}/truth/image.dmg 2>&1", 3)
   end
 end
