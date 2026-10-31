@@ -1,8 +1,8 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.22.0.tar.gz"
-  sha256 "24942dc97681ec2724d00110fc981e323d2cefe87a15b8cb17a99c1563a98078"
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.23.0.tar.gz"
+  sha256 "95d4a92beab478eec73ea2dbf21ae3489f177b7ed0f310e50d942af9d2b614d0"
   # stuffr-cli carries code ported from bzip2 1.0.8 (crates/stuffr-cli/LICENSE-bzip2)
   # and from Apple's BSD-licensed gzip sources (crates/stuffr-cli/LICENSE-gzip-bsd);
   # stuffr-formats' pack decoder is BSD-2-Clause (crates/stuffr-formats/LICENSE-unpack-bsd);
@@ -314,5 +314,15 @@ class Stuffr < Formula
     koly = "koly" + [4, 512].pack("NN") + ("\x00" * 500)
     (testpath/"truth/image.dmg").binwrite("\x78\x9c" + ("\x00" * 600) + koly)
     assert_match "Apple disk image", shell_output("#{bin}/stuffr cat #{testpath}/truth/image.dmg 2>&1", 3)
+
+    # 0.23.0: zip 9, and a piped zip reads its trailing central directory and
+    # checks it against the local headers it streamed. When they agree, the
+    # pipe no longer reports an unread index, so a well-formed zip from the
+    # system's own writer passes even under --strict-fidelity (exit 0; 0.22.0
+    # exited 4 here).
+    system "/usr/bin/zip", "-q", "-X", "-r", testpath/"piped.zip", "proj/sub"
+    assert_match "verified",
+                 pipe_output("#{bin}/stuffr test --strict-fidelity - 2>&1",
+                             (testpath/"piped.zip").binread, 0)
   end
 end
