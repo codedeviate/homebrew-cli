@@ -1,8 +1,8 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.23.0.tar.gz"
-  sha256 "95d4a92beab478eec73ea2dbf21ae3489f177b7ed0f310e50d942af9d2b614d0"
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.24.0.tar.gz"
+  sha256 "eabc909fee1c4a0d95d234fe8e931ca7013ea205172dcdd6254ae1b45d5d0f82"
   # stuffr-cli carries code ported from bzip2 1.0.8 (crates/stuffr-cli/LICENSE-bzip2)
   # and from Apple's BSD-licensed gzip sources (crates/stuffr-cli/LICENSE-gzip-bsd);
   # stuffr-formats' pack decoder is BSD-2-Clause (crates/stuffr-formats/LICENSE-unpack-bsd);
@@ -324,5 +324,13 @@ class Stuffr < Formula
     assert_match "verified",
                  pipe_output("#{bin}/stuffr test --strict-fidelity - 2>&1",
                              (testpath/"piped.zip").binread, 0)
+
+    # 0.24.0 (security audit): bytes after a gzip member that are neither
+    # another member nor padding are no longer dropped in silence. The data
+    # still decodes (exit 0), and stuffr says what it ignored.
+    junk = pipe_output("/usr/bin/gzip -c", "hello\n", 0) + "JUNKJUNK"
+    (testpath/"junk.gz").binwrite(junk)
+    assert_match "followed by 8 byte(s)",
+                 shell_output("#{bin}/stuffr cat #{testpath}/junk.gz 2>&1")
   end
 end
