@@ -1,8 +1,8 @@
 class Targrep < Formula
   desc "Search log archives (tar, zip; gzip, zstd, xz, bzip2, lz4, .Z) with rg flags"
   homepage "https://github.com/codedeviate/trg"
-  url "https://github.com/codedeviate/trg/archive/refs/tags/v0.12.0.tar.gz"
-  sha256 "3546a1a38bd1fe9a4d3641061ccd40a43548ff8f6eb20c172ffbf689cf6d25fb"
+  url "https://github.com/codedeviate/trg/archive/refs/tags/v0.13.0.tar.gz"
+  sha256 "4f4da8d9964138449f111cf9dd99c92eb53d06da055a0aca9728f0e7c75f3a4e"
   license "MIT"
   head "https://github.com/codedeviate/trg.git", branch: "master"
 
