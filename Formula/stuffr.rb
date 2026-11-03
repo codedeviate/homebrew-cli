@@ -1,8 +1,8 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.24.0.tar.gz"
-  sha256 "eabc909fee1c4a0d95d234fe8e931ca7013ea205172dcdd6254ae1b45d5d0f82"
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.25.0.tar.gz"
+  sha256 "7ac27ea97c2f0515182e83efd9c610ebbb9f86eaf09ed5999904d01e9d175e31"
   # stuffr-cli carries code ported from bzip2 1.0.8 (crates/stuffr-cli/LICENSE-bzip2)
   # and from Apple's BSD-licensed gzip sources (crates/stuffr-cli/LICENSE-gzip-bsd);
   # stuffr-formats' pack decoder is BSD-2-Clause (crates/stuffr-formats/LICENSE-unpack-bsd);
@@ -33,7 +33,7 @@ class Stuffr < Formula
     # lz4 links write lz4's exact bytes at every level.
     # `brotli-c` compiles the libbrotli 1.2.1 sources vendored in
     # stuffr-formats, so the brotli links write brotli's exact bytes.
-    system "cargo", "install", *std_cargo_args(path: "crates/stuffr-cli",
+    system "cargo", "install", *std_cargo_args(path:     "crates/stuffr-cli",
                                                features: ["zstd-c", "lz4-c", "brotli-c"])
   end
 
@@ -287,7 +287,7 @@ class Stuffr < Formula
     # read them back, and the version line names the brotli it behaves as.
     assert_predicate testpath/"links/brotli", :symlink?
     (testpath/"br.txt").write "GET /index.html HTTP/1.1 200 1043\n" * 2000
-    brotli = Formula["brotli"].opt_bin/"brotli"
+    brotli = formula_opt_bin("brotli")/"brotli"
     assert_equal shell_output("#{brotli} -q 9 -c #{testpath}/br.txt"),
                  shell_output("#{testpath}/links/brotli -q 9 -c #{testpath}/br.txt")
     system testpath/"links/brotli", "-q", "9", "-o", testpath/"br.txt.br", testpath/"br.txt"
@@ -332,5 +332,10 @@ class Stuffr < Formula
     (testpath/"junk.gz").binwrite(junk)
     assert_match "followed by 8 byte(s)",
                  shell_output("#{bin}/stuffr cat #{testpath}/junk.gz 2>&1")
+
+    # 0.25.0: `cat --strict-fidelity` turns that warning into exit 4. The
+    # bytes are still written first; only the verdict changes.
+    assert_equal "hello\n",
+                 shell_output("#{bin}/stuffr cat --strict-fidelity #{testpath}/junk.gz 2>/dev/null", 4)
   end
 end
