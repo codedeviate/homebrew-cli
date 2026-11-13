@@ -1,8 +1,8 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.26.0.tar.gz"
-  sha256 "edc14c0102685c08cb3f38ce6cc3d2ab35c24a9536a0a21cff78ac1b864e21f3"
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.27.0.tar.gz"
+  sha256 "2fffb86e6a89f5b160b064b8e1337156df5bde5f7214c20a93d1e39248248194"
   # stuffr-cli carries code ported from bzip2 1.0.8 (crates/stuffr-cli/LICENSE-bzip2)
   # and from Apple's BSD-licensed gzip sources (crates/stuffr-cli/LICENSE-gzip-bsd);
   # stuffr-formats' pack decoder is BSD-2-Clause (crates/stuffr-formats/LICENSE-unpack-bsd);
@@ -50,7 +50,7 @@ class Stuffr < Formula
       and for lz4, unlz4, lz4cat and lz4c (lz4 1.11.0 behaviour; this build's
       lz4 output is byte-identical to lz4's), and for unzip, zipinfo and
       funzip (Info-ZIP UnZip 6.0: Apple's build on macOS;
-      STUFFR_UNZIP_FLAVOR=ubuntu switches to Ubuntu's 6.0-28ubuntu4.1),
+      STUFFR_UNZIP_FLAVOR=debian switches to Debian 13's 6.0-29+deb13u1),
       and for zip, zipcloak, zipnote and zipsplit (Info-ZIP Zip 3.0, the same
       archives as the system zip), and for compress and uncompress, and for
       brotli, unbrotli and brcat (brotli 1.2.1 behaviour; this build's
