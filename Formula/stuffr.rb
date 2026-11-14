@@ -1,8 +1,8 @@
 class Stuffr < Formula
   desc "Universal compression and archive toolkit"
   homepage "https://github.com/codedeviate/stuffr"
-  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.28.0.tar.gz"
-  sha256 "f36acb793b5afa526ba8d068183b166b6112cf8e6b99758c2a374955048cca70"
+  url "https://github.com/codedeviate/stuffr/archive/refs/tags/v0.29.0.tar.gz"
+  sha256 "6b501c9eb61bc5e91e6ec052962758f76230bebcb533340b316f6f7d4260d71f"
   # stuffr-cli carries code ported from bzip2 1.0.8 (crates/stuffr-cli/LICENSE-bzip2)
   # and from Apple's BSD-licensed gzip sources (crates/stuffr-cli/LICENSE-gzip-bsd);
   # stuffr-formats' pack decoder is BSD-2-Clause (crates/stuffr-formats/LICENSE-unpack-bsd);
