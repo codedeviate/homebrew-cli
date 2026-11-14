@@ -10,7 +10,7 @@ class Stuffr < Formula
   # crates/stuffr-formats/LICENSE-xz-memusage); the zstd family is ported from zstd 1.5.7
   # under BSD-3-Clause (crates/stuffr-cli/LICENSE-zstd), and this build links libzstd;
   # the lz4 family is a clean-room implementation (lz4's GPL command line tool was not
-  # read) and this build compiles the vendored liblz4 1.11.0, BSD-2-Clause (crates/stuffr-cli/LICENSE-lz4);
+  # read) and this build compiles the vendored liblz4 1.11.1, BSD-2-Clause (crates/stuffr-cli/LICENSE-lz4);
   # the brotli family is ported from brotli 1.2.1's MIT tool and this build compiles the
   # vendored libbrotli 1.2.1, MIT (crates/stuffr-formats/LICENSE-brotli).
   license all_of: ["MIT", "bzip2-1.0.6", "BSD-2-Clause", "BSD-3-Clause", "0BSD"]
@@ -30,7 +30,7 @@ class Stuffr < Formula
     # `zstd-c` builds libzstd 1.5.7 in (vendored by zstd-sys, pinned by the
     # lock file that std_cargo_args' `--locked` honours), so the zstd links
     # write zstd's exact bytes and support dictionaries and --train.
-    # `lz4-c` compiles the liblz4 1.11.0 sources vendored in stuffr-formats
+    # `lz4-c` compiles the liblz4 1.11.1 sources vendored in stuffr-formats
     # (every symbol prefixed `stuffr_`), so the lz4 links write lz4's exact
     # bytes at every level.
     # `brotli-c` compiles the libbrotli 1.2.1 sources vendored in
@@ -47,7 +47,7 @@ class Stuffr < Formula
       to GNU gzip's), and for xz, unxz, xzcat, lzma, unlzma and lzcat (XZ
       Utils 5.8.4 behaviour), and for zstd, unzstd, zstdcat and zstdmt (zstd
       1.5.7 behaviour; this build's zstd output is byte-identical to zstd's),
-      and for lz4, unlz4, lz4cat and lz4c (lz4 1.11.0 behaviour; this build's
+      and for lz4, unlz4, lz4cat and lz4c (lz4 1.11.1 behaviour; this build's
       lz4 output is byte-identical to lz4's), and for unzip, zipinfo and
       funzip (Info-ZIP UnZip 6.0: Apple's build on macOS;
       STUFFR_UNZIP_FLAVOR=debian switches to Debian 13's 6.0-29+deb13u1),
@@ -242,14 +242,14 @@ class Stuffr < Formula
     assert_equal "1.5.7", shell_output("#{testpath}/links/zstd -qV").strip
 
     # 0.15.0's headline: the lz4 family, built on the C tier (`lz4-c`), so it
-    # is liblz4 underneath (vendored 1.11.0 since 0.26.0). Compress at -9, test the frame, and read it
+    # is liblz4 underneath (vendored 1.11.1 since 0.29.0). Compress at -9, test the frame, and read it
     # back through `lz4cat`; the version line names the lz4 it behaves as.
     assert_predicate testpath/"links/lz4", :symlink?
     (testpath/"l.txt").write "lz4 compat\n" * 1000
     system testpath/"links/lz4", "-q", "-9", testpath/"l.txt"
     system testpath/"links/lz4", "-q", "-t", testpath/"l.txt.lz4"
     assert_equal (testpath/"l.txt").read, shell_output("#{testpath}/links/lz4cat #{testpath}/l.txt.lz4")
-    assert_match "v1.11.0", shell_output("#{testpath}/links/lz4 -V 2>&1")
+    assert_match "v1.11.1", shell_output("#{testpath}/links/lz4 -V 2>&1")
 
     # 0.16.0's headline: the unzip family, a port of Info-ZIP UnZip 6.0 that
     # behaves as macOS's own /usr/bin/unzip here. Its listing and its test of
@@ -340,7 +340,7 @@ class Stuffr < Formula
     assert_equal "hello\n",
                  shell_output("#{bin}/stuffr cat --strict-fidelity #{testpath}/junk.gz 2>/dev/null", 4)
 
-    # 0.26.0: the lz4 links follow lz4 1.11.0. Homebrew's own lz4 is the
+    # 0.26.0: the lz4 links follow lz4 1.11.0 (1.11.1 since 0.29.0). Homebrew's own lz4 is the
     # external witness: the same input at -9 must give the same bytes.
     lz4 = formula_opt_bin("lz4")/"lz4"
     (testpath/"l11.txt").write "GET /index.html HTTP/1.1 200 1043\n" * 2000
